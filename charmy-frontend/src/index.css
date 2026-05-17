@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200;
+  }
+}

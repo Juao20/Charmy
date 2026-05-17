@@ -1,0 +1,13 @@
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+import uuid
+
+class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    is_premium = models.BooleanField(default=False)
+    premium_until = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email

@@ -2,6 +2,7 @@ import stripe
 from django.conf import settings
 from django.utils import timezone
 from datetime import datetime
+import os
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -10,6 +11,9 @@ PRICE_MAP = {
     'yearly':  settings.STRIPE_PRICE_YEARLY,
     'pack':    settings.STRIPE_PRICE_PACK,
 }
+
+success_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173') + '/premium/success',
+cancel_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173') + '/premium',
 
 class StripeService:
 
@@ -41,8 +45,8 @@ class StripeService:
             payment_method_types=['card'],
             line_items=[{'price': price_id, 'quantity': 1}],
             mode='subscription' if is_recurring else 'payment',
-            success_url=success_url + '?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=cancel_url,
+            success_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173') + '/premium/success',
+            cancel_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173') + '/premium',
             metadata={
                 'user_id': str(user.id),
                 'plan': plan,

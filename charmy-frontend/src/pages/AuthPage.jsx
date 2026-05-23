@@ -13,7 +13,7 @@ export default function AuthPage() {
   })
   const [errors, setErrors] = useState({})
   const navigate = useNavigate()
-  const { setTokens, setUser } = useAuthStore()
+  const { setTokens, setUser, hasSeenOnboarding } = useAuthStore()
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
@@ -24,7 +24,11 @@ export default function AuthPage() {
     mutationFn: () => login({ username: form.email, password: form.password }),
     onSuccess: (res) => {
       setTokens(res.data.access, res.data.refresh)
-      navigate('/')
+      if (!hasSeenOnboarding) {
+        navigate('/onboarding')
+      } else {
+        navigate('/')
+      }
     },
     onError: () => setErrors({ general: 'Email ou mot de passe incorrect.' }),
   })

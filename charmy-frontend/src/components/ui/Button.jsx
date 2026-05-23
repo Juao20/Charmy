@@ -11,8 +11,9 @@ export default function Button({
 
   const variants = {
     primary: 'bg-charmy-500 hover:bg-charmy-600 text-white disabled:opacity-50',
-    outline: 'border-2 border-charmy-500 text-charmy-500 hover:bg-charmy-50 dark:hover:bg-charmy-950',
-    ghost: 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800',
+    outline: 'border-2 border-charmy-500 text-charmy-500 hover:bg-charmy-50 dark:hover:bg-charmy-950 bg-transparent',
+    ghost: 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 bg-transparent',
+    white: 'bg-white text-charmy-500 hover:bg-charmy-50 font-bold',
   }
 
   return (

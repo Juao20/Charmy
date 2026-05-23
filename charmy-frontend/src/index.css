@@ -1,9 +1,36 @@
 @import "tailwindcss";
 
+/* Dark mode via classe sur <html> */
+@variant dark (&:where(.dark, .dark *));
+
+/* Couleurs Charmy custom */
+@theme {
+  --color-charmy-50: #fff0f6;
+  --color-charmy-100: #ffd6e8;
+  --color-charmy-200: #ffadd2;
+  --color-charmy-300: #ff85be;
+  --color-charmy-400: #f759a0;
+  --color-charmy-500: #eb2f82;
+  --color-charmy-600: #c4136a;
+  --color-charmy-700: #9e0055;
+  --color-charmy-800: #780040;
+  --color-charmy-900: #52002c;
+  --color-charmy-950: #2d0018;
+
+  --font-sans: 'Inter', sans-serif;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
   body {
-    @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200;
+    background-color: white;
+    color: #111827;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .dark body {
+    background-color: #030712;
+    color: #f3f4f6;
   }
 }

@@ -109,7 +109,10 @@ export default function ProfilePage() {
               Suggestions illimitées, coach temps réel et plus
             </p>
           </div>
-          <button className="bg-white text-charmy-500 text-xs font-bold px-3 py-2 rounded-xl shrink-0 hover:bg-charmy-50 transition">
+          <button
+            onClick={() => navigate('/premium')}
+            className="bg-white text-charmy-500 text-xs font-bold px-3 py-2 rounded-xl shrink-0 hover:bg-charmy-50 transition"
+          >
             Voir les offres
           </button>
         </div>

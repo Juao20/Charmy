@@ -7,6 +7,7 @@ const useAuthStore = create(
       user: null,
       accessToken: null,
       refreshToken: null,
+      hasSeenOnboarding: false,
 
       setTokens: (access, refresh) => set({
         accessToken: access,
@@ -15,13 +16,16 @@ const useAuthStore = create(
 
       setUser: (user) => set({ user }),
 
+      setOnboardingDone: () => set({ hasSeenOnboarding: true }),
+
       logout: () => set({
         user: null,
         accessToken: null,
         refreshToken: null,
+        hasSeenOnboarding: false,
       }),
     }),
-    { name: 'charmy-auth' } // persisté dans localStorage
+    { name: 'charmy-auth' }
   )
 )
 

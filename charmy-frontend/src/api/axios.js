@@ -1,19 +1,24 @@
 import axios from 'axios'
-import useAuthStore from '../store/authStore'
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api',
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Injecter le token automatiquement sur chaque requête
+// Injecter le token à chaque requête
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  // Importer le store directement ici pour éviter les problèmes de circular import
+  const storage = localStorage.getItem('charmy-auth')
+  if (storage) {
+    const { state } = JSON.parse(storage)
+    if (state?.accessToken) {
+      config.headers.Authorization = `Bearer ${state.accessToken}`
+    }
+  }
   return config
 })
 
-// Refresh token automatique si 401
+// Refresh token si 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -21,15 +26,22 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true
       try {
-        const refresh = useAuthStore.getState().refreshToken
-        const { data } = await axios.post('http://localhost:8000/api/auth/refresh/', {
-          refresh,
-        })
-        useAuthStore.getState().setTokens(data.access, refresh)
-        original.headers.Authorization = `Bearer ${data.access}`
-        return api(original)
+        const storage = localStorage.getItem('charmy-auth')
+        if (storage) {
+          const { state } = JSON.parse(storage)
+          const { data } = await axios.post(
+            'http://localhost:8000/api/auth/refresh/',
+            { refresh: state.refreshToken }
+          )
+          // Mettre à jour le store
+          const parsed = JSON.parse(storage)
+          parsed.state.accessToken = data.access
+          localStorage.setItem('charmy-auth', JSON.stringify(parsed))
+          original.headers.Authorization = `Bearer ${data.access}`
+          return api(original)
+        }
       } catch {
-        useAuthStore.getState().logout()
+        localStorage.removeItem('charmy-auth')
         window.location.href = '/auth'
       }
     }

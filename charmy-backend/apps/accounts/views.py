@@ -1,4 +1,5 @@
-import stripe
+import hmac
+import hashlib
 from .models import User
 from rest_framework import generics, permissions
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -10,7 +11,7 @@ from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
-from .stripe_service import StripeService
+from .payment_service import LemonSqueezyService
 from datetime import datetime
 from django.utils import timezone
 
@@ -27,7 +28,7 @@ class MeView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-class CreateCheckoutSessionView(APIView):
+class CreateCheckoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -35,99 +36,73 @@ class CreateCheckoutSessionView(APIView):
         if plan not in ('monthly', 'yearly', 'pack'):
             return Response({'error': 'Plan invalide.'}, status=400)
 
-        session = StripeService.create_checkout_session(
+        from django.conf import settings
+        checkout_url = LemonSqueezyService.create_checkout(
             user=request.user,
             plan=plan,
-            success_url='http://localhost:5173/premium/success',
-            cancel_url='http://localhost:5173/premium',
+            success_url=f"{settings.FRONTEND_URL}/premium/success",
+            cancel_url=f"{settings.FRONTEND_URL}/premium",
         )
-        return Response({'checkout_url': session.url})
-
-
-class CreatePortalSessionView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
-        session = StripeService.create_portal_session(
-            user=request.user,
-            return_url='http://localhost:5173/profile',
-        )
-        return Response({'portal_url': session.url})
+        return Response({'checkout_url': checkout_url})
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class StripeWebhookView(APIView):
+class LemonSqueezyWebhookView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         payload = request.body
-        sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+        signature = request.META.get('HTTP_X_SIGNATURE', '')
 
-        try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-            )
-        except (ValueError, stripe.error.SignatureVerificationError):
+        # Vérifier la signature
+        if not LemonSqueezyService.verify_webhook(payload, signature):
             return HttpResponse(status=400)
 
-        data = event['data']['object']
+        import json
+        data = json.loads(payload)
+        event_name = data.get('meta', {}).get('event_name', '')
+        custom_data = data.get('meta', {}).get('custom_data', {})
 
-        # Convertir l'objet Stripe en dict Python — c'est le fix principal
-        if hasattr(data, 'to_dict'):
-            data = data.to_dict()
-        elif hasattr(data, '_data'):
-            data = dict(data._data)
+        print(f"📨 Webhook LemonSqueezy : {event_name}")
 
-        event_type = event['type']
-        print(f"📨 Webhook reçu : {event_type}")
+        user_id = custom_data.get('user_id')
+        plan = custom_data.get('plan')
 
-        # Abonnement activé
-        if event_type == 'checkout.session.completed':
-            metadata = data.get('metadata', {})
-            user_id = metadata.get('user_id')
-            plan = metadata.get('plan')
-            print(f"👤 User ID: {user_id} | Plan: {plan}")
-
+        # Commande complétée (one-time ou abonnement)
+        if event_name in ('order_created', 'subscription_created'):
             try:
                 user = User.objects.get(id=user_id)
-                StripeService.activate_premium(
+                order_data = data.get('data', {})
+                subscription_id = str(order_data.get('id', ''))
+
+                LemonSqueezyService.activate_premium(
                     user=user,
                     plan=plan,
-                    subscription_id=data.get('subscription', ''),
-                    payment_intent_id=data.get('payment_intent', ''),
-                    period_end=None,
+                    subscription_id=subscription_id,
                 )
-                print(f"✅ Premium activé pour {user.email}")
+                print(f"✅ Premium activé pour {user.email} — plan {plan}")
             except User.DoesNotExist:
                 print(f"❌ User {user_id} introuvable")
 
-        # Renouvellement
-        elif event_type == 'invoice.payment_succeeded':
-            subscription_id = data.get('subscription')
-            if subscription_id:
-                try:
-                    sub = stripe.Subscription.retrieve(subscription_id)
-                    sub_dict = sub.to_dict() if hasattr(sub, 'to_dict') else dict(sub)
-                    user_id = sub_dict.get('metadata', {}).get('user_id')
-                    if user_id:
-                        user = User.objects.get(id=user_id)
-                        from datetime import datetime
-                        user.premium_until = datetime.fromtimestamp(
-                            sub_dict['current_period_end'], tz=timezone.utc
-                        )
-                        user.save(update_fields=['premium_until'])
-                        print(f"🔄 Premium renouvelé pour {user.email}")
-                except User.DoesNotExist:
-                    pass
-
-        # Annulation
-        elif event_type in ('customer.subscription.deleted', 'customer.subscription.paused'):
-            subscription_id = data.get('id')
+        # Abonnement annulé
+        elif event_name in ('subscription_cancelled', 'subscription_expired'):
             try:
-                sub = Subscription.objects.get(stripe_subscription_id=subscription_id)
-                StripeService.deactivate_premium(sub.user)
-                print(f"❌ Premium annulé pour {sub.user.email}")
-            except Subscription.DoesNotExist:
+                user = User.objects.get(id=user_id)
+                LemonSqueezyService.deactivate_premium(user)
+                print(f"❌ Premium annulé pour {user.email}")
+            except User.DoesNotExist:
+                pass
+
+        # Renouvellement
+        elif event_name == 'subscription_payment_success':
+            try:
+                user = User.objects.get(id=user_id)
+                from datetime import timedelta
+                from django.utils import timezone
+                user.premium_until = timezone.now() + timedelta(days=30)
+                user.save(update_fields=['premium_until'])
+                print(f"🔄 Premium renouvelé pour {user.email}")
+            except User.DoesNotExist:
                 pass
 
         return HttpResponse(status=200)

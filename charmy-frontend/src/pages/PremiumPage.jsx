@@ -26,7 +26,7 @@ const PLANS = [
     label: 'Annuel',
     price: '€89.99',
     period: '/an',
-    description: 'Économise 33%',
+    description: 'Économise 42%',
     badge: '🔥 Meilleure offre',
     features: [
       'Tout du plan mensuel',
@@ -38,7 +38,7 @@ const PLANS = [
   {
     id: 'pack',
     label: 'Pack Situations',
-    price: '€4.99',
+    price: '€6.99',
     period: 'one-shot',
     description: 'Paiement unique',
     badge: null,
@@ -50,7 +50,6 @@ const PLANS = [
     ],
   },
 ]
-
 export default function PremiumPage() {
   const navigate = useNavigate()
   const [selected, setSelected] = useState('yearly')

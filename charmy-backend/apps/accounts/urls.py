@@ -1,10 +1,10 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
-    RegisterView, MeView,
-    CreateCheckoutSessionView,
-    CreatePortalSessionView,
-    StripeWebhookView,
+    RegisterView,
+    MeView,
+    CreateCheckoutView,
+    LemonSqueezyWebhookView,
 )
 
 urlpatterns = [
@@ -12,7 +12,6 @@ urlpatterns = [
     path('login/', TokenObtainPairView.as_view()),
     path('refresh/', TokenRefreshView.as_view()),
     path('me/', MeView.as_view()),
-    path('stripe/checkout/', CreateCheckoutSessionView.as_view()),
-    path('stripe/portal/', CreatePortalSessionView.as_view()),
-    path('stripe/webhook/', StripeWebhookView.as_view()),
+    path('checkout/', CreateCheckoutView.as_view()),
+    path('webhook/lemonsqueezy/', LemonSqueezyWebhookView.as_view()),
 ]

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Charmy</string>
+    <string name="title_activity_main">Charmy</string>
+    <string name="package_name">com.charmy.app</string>
+    <string name="custom_url_scheme">com.charmy.app</string>
+</resources>

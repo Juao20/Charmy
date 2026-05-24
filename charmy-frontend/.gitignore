@@ -23,3 +23,16 @@ dist-ssr
 *.sln
 *.sw?
 .env.production
+
+# Capacitor
+android/
+ios/
+.capacitor/
+
+# Keystore — très important, ne jamais commit ça
+*.jks
+*.keystore
+*.p12
+
+# Assets générés
+assets/

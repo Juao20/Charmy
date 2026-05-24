@@ -1,9 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
-/* Dark mode via classe sur <html> */
 @variant dark (&:where(.dark, .dark *));
 
-/* Couleurs Charmy custom */
 @theme {
   --color-charmy-50: #fff0f6;
   --color-charmy-100: #ffd6e8;
@@ -19,8 +19,6 @@
 
   --font-sans: 'Inter', sans-serif;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
   body {

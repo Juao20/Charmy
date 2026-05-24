@@ -91,6 +91,8 @@ TEMPLATES = [
     },
 ]
 
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:5173')
+
 # Fichiers statiques
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'

@@ -70,13 +70,19 @@ class LemonSqueezyWebhookView(APIView):
 
         # Commande complétée (one-time ou abonnement)
         if event_name in ('order_created', 'subscription_created'):
-            # Log tout pour voir ce qu'on reçoit
-            print(f"📦 custom_data reçu : {custom_data}")
-            print(f"📦 meta complet : {data.get('meta', {})}")
-            
-            user_id = custom_data.get('user_id')
-            plan = custom_data.get('plan')
-            print(f"👤 user_id: {user_id} | plan: {plan}")
+            try:
+                user = User.objects.get(id=user_id)
+                order_data = data.get('data', {})
+                subscription_id = str(order_data.get('id', ''))
+
+                LemonSqueezyService.activate_premium(
+                    user=user,
+                    plan=plan,
+                    subscription_id=subscription_id,
+                )
+                print(f"✅ Premium activé pour {user.email} — plan {plan}")
+            except User.DoesNotExist:
+                print(f"❌ User {user_id} introuvable")
 
         # Abonnement annulé
         elif event_name in ('subscription_cancelled', 'subscription_expired'):

@@ -91,6 +91,11 @@ TEMPLATES = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://charmy-production.up.railway.app',
+    'https://charmy-psi.vercel.app',
+]
+
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:5173')
 
 # Fichiers statiques

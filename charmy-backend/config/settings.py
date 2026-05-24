@@ -57,6 +57,13 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     'http://localhost:5173',
 ])
 
+# capacitor
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^capacitor://.*$',
+    r'^https://localhost.*$',
+]
+
 # JWT
 from datetime import timedelta
 SIMPLE_JWT = {

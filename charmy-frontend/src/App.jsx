@@ -16,6 +16,7 @@ import PremiumSuccessPage from './pages/PremiumSuccessPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import RefundPage from './pages/RefundPage'
+import LandingPage from './pages/LandingPage'
 
 function PrivateRoute({ children }) {
   const token = useAuthStore((s) => s.accessToken)
@@ -30,6 +31,9 @@ export default function App() {
 
           {/* Splash */}
           <Route path="/splash" element={<SplashPage />} />
+
+          {/* Landing page visible publiquement */}
+          <Route path="/landing" element={<LandingPage />} />
 
           {/* Auth */}
           <Route path="/auth" element={<AuthPage />} />

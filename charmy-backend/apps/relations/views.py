@@ -7,7 +7,10 @@ from datetime import timedelta
 from apps.conversations.models import ConversationSession, AISuggestion
 from rest_framework import generics, permissions
 from .models import Contact, Relation, RelationJournal
-from .serializers import ContactSerializer, RelationSerializer, RelationJournalSerializer
+from .serializers import (
+    ContactSerializer, RelationSerializer,
+    RelationJournalSerializer, JournalEntrySerializer,
+)
 
 class DashboardStatsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -95,5 +98,22 @@ class RelationJournalListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         relation = get_object_or_404(
             Relation, id=self.kwargs['relation_id'], user=self.request.user
+        )
+        serializer.save(relation=relation)
+
+
+class JournalListCreateView(generics.ListCreateAPIView):
+    """Journal relationnel global — toutes les entrées, toutes relations confondues."""
+    serializer_class = JournalEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return RelationJournal.objects.filter(
+            relation__user=self.request.user
+        ).select_related('relation__contact').order_by('-event_date')
+
+    def perform_create(self, serializer):
+        relation = get_object_or_404(
+            Relation, id=self.request.data.get('relation_id'), user=self.request.user
         )
         serializer.save(relation=relation)

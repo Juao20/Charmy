@@ -50,3 +50,23 @@ class RelationJournalSerializer(serializers.ModelSerializer):
         model = RelationJournal
         fields = ['id', 'note', 'event_type', 'event_date', 'created_at']
         read_only_fields = ['id', 'created_at']
+
+
+class JournalEntrySerializer(serializers.ModelSerializer):
+    """Entrée de journal avec le contexte de la relation — utilisée par la page Journal globale."""
+    relation_id = serializers.UUIDField(write_only=True)
+    relation_name = serializers.CharField(source='relation.contact.name', read_only=True)
+
+    class Meta:
+        model = RelationJournal
+        fields = [
+            'id', 'relation_id', 'relation_name', 'note',
+            'event_type', 'event_date', 'created_at',
+        ]
+        read_only_fields = ['id', 'created_at']
+
+    def validate_relation_id(self, value):
+        user = self.context['request'].user
+        if not Relation.objects.filter(id=value, user=user).exists():
+            raise serializers.ValidationError("Cette relation ne t'appartient pas.")
+        return value

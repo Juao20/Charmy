@@ -11,7 +11,6 @@ import {
   BellIcon,
   QuestionMarkCircleIcon,
   ChevronRightIcon,
-  StarIcon,
 } from '@heroicons/react/24/outline'
 
 export default function ProfilePage() {
@@ -73,17 +72,6 @@ export default function ProfilePage() {
               {user?.username}
             </h2>
             <p className="text-sm text-gray-400 truncate">{user?.email}</p>
-            <div className="flex items-center gap-1 mt-1">
-              {user?.is_premium ? (
-                <span className="text-xs bg-yellow-50 dark:bg-yellow-950 text-yellow-500 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                  <StarIcon className="w-3 h-3" /> Premium
-                </span>
-              ) : (
-                <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">
-                  Gratuit
-                </span>
-              )}
-            </div>
           </div>
         </div>
 
@@ -99,24 +87,6 @@ export default function ProfilePage() {
           </p>
         </div>
       </Card>
-
-      {/* Banner Premium */}
-      {!user?.is_premium && (
-        <div className="bg-gradient-to-r from-charmy-500 to-pink-500 rounded-3xl p-4 flex items-center gap-4">
-          <div className="flex-1">
-            <h3 className="text-white font-bold text-sm">Passe à Charmy Premium</h3>
-            <p className="text-white/80 text-xs mt-0.5">
-              Suggestions illimitées, coach temps réel et plus
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/premium')}
-            className="bg-white text-charmy-500 text-xs font-bold px-3 py-2 rounded-xl shrink-0 hover:bg-charmy-50 transition"
-          >
-            Voir les offres
-          </button>
-        </div>
-      )}
 
       {/* Menu items */}
       <Card className="p-0 overflow-hidden">

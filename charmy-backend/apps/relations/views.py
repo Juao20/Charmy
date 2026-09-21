@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from datetime import timedelta
 from apps.conversations.models import ConversationSession, AISuggestion
 from rest_framework import generics, permissions
@@ -92,4 +93,7 @@ class RelationJournalListCreateView(generics.ListCreateAPIView):
         ).order_by('-event_date')
 
     def perform_create(self, serializer):
-        serializer.save(relation_id=self.kwargs['relation_id'])
+        relation = get_object_or_404(
+            Relation, id=self.kwargs['relation_id'], user=self.request.user
+        )
+        serializer.save(relation=relation)

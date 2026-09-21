@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getRelation, getJournal, deleteRelation } from '../api/relations'
-import { getSessionHistory, getUsageStatus } from '../api/conversations'  // ← ajoute
+import { getSessionHistory } from '../api/conversations'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import {
@@ -11,7 +11,6 @@ import {
   HeartIcon,
   TrashIcon,
   PencilIcon,
-  LockClosedIcon,  // ← ajoute
 } from '@heroicons/react/24/outline'
 
 const RELATION_LABELS = {
@@ -67,14 +66,9 @@ export default function RelationPage() {
         navigate('/')
     },
   })
-  const { data: usage } = useQuery({
-    queryKey: ['usage'],
-    queryFn: () => getUsageStatus().then((r) => r.data),
-  })
-  const { data: historyData, isError: historyLocked } = useQuery({
+  const { data: historyData } = useQuery({
     queryKey: ['history', id],
     queryFn: () => getSessionHistory(id).then((r) => r.data),
-    retry: false,
   })
 
   if (isLoading) return (
@@ -213,78 +207,67 @@ export default function RelationPage() {
         Obtenir des suggestions IA
       </button>
 
-      {/* Journal */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1 flex items-center gap-2">
-          Historique des sessions
-          {!usage?.is_premium && (
-            <span className="text-xs bg-yellow-50 dark:bg-yellow-950 text-yellow-500 px-2 py-0.5 rounded-full">
-              Premium
-            </span>
-          )}
-        </h3>
-
-        {historyLocked ? (
-          <Card className="relative overflow-hidden">
-            {/* Preview floutée */}
-            <div className="blur-sm pointer-events-none select-none flex flex-col gap-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800" />
-                  <div className="flex-1">
-                    <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-3/4 mb-2" />
-                    <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-3xl">
-              <LockClosedIcon className="w-6 h-6 text-charmy-500 mb-2" />
-              <p className="text-sm font-bold text-gray-900 dark:text-white">
-                Historique Premium
-              </p>
-              <p className="text-xs text-gray-400 text-center mt-1 px-6">
-                Retrouve toutes tes sessions passées et suis tes progrès
-              </p>
-              <button
-                onClick={() => navigate('/premium')}
-                className="mt-3 bg-charmy-500 text-white text-xs font-bold px-4 py-2 rounded-xl"
-              >
-                Débloquer ✨
-              </button>
-            </div>
-          </Card>
-        ) : (
+      {/* Journal relationnel */}
+      {entries.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1">
+            Journal
+          </h3>
           <div className="flex flex-col gap-2">
-            {(historyData?.results || historyData || []).length === 0 ? (
-              <Card>
-                <p className="text-sm text-gray-400 text-center py-2">
-                  Aucune session pour l'instant
+            {entries.map((entry) => (
+              <Card key={entry.id}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-charmy-500">
+                    {EVENT_LABELS[entry.event_type] || entry.event_type}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    {new Date(entry.event_date).toLocaleDateString('fr-FR', {
+                      day: 'numeric', month: 'long', year: 'numeric'
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                  {entry.note}
                 </p>
               </Card>
-            ) : (
-              (historyData?.results || historyData || []).map((session) => (
-                <Card key={session.id}>
-                  <p className="text-xs text-gray-400">
-                    {new Date(session.created_at).toLocaleDateString('fr-FR', {
-                      day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-                    })}
-                  </p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 line-clamp-2">
-                    {session.raw_input}
-                  </p>
-                  {session.context_summary && (
-                    <p className="text-xs text-charmy-500 mt-1 italic">
-                      {session.context_summary}
-                    </p>
-                  )}
-                </Card>
-              ))
-            )}
+            ))}
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Historique des sessions IA */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1">
+          Historique des sessions
+        </h3>
+
+        <div className="flex flex-col gap-2">
+          {(historyData?.results || historyData || []).length === 0 ? (
+            <Card>
+              <p className="text-sm text-gray-400 text-center py-2">
+                Aucune session pour l'instant
+              </p>
+            </Card>
+          ) : (
+            (historyData?.results || historyData || []).map((session) => (
+              <Card key={session.id}>
+                <p className="text-xs text-gray-400">
+                  {new Date(session.created_at).toLocaleDateString('fr-FR', {
+                    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+                  })}
+                </p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 line-clamp-2">
+                  {session.raw_input}
+                </p>
+                {session.context_summary && (
+                  <p className="text-xs text-charmy-500 mt-1 italic">
+                    {session.context_summary}
+                  </p>
+                )}
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

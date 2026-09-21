@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import Button from '../components/ui/Button'
 
 export default function LandingPage() {
   const navigate = useNavigate()
@@ -80,56 +79,27 @@ export default function LandingPage() {
         ))}
       </div>
 
-      {/* Pricing */}
+      {/* 100% gratuit */}
       <div className="max-w-4xl mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Simple, transparent pricing
+          100% free, no catch
         </h2>
-        <p className="text-gray-500 mb-8">Start free, upgrade when you're ready</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            {
-              name: 'Free',
-              price: '€0',
-              period: 'forever',
-              features: ['2 sessions/day', '2 suggestions per session', 'Basic strategies'],
-            },
-            {
-              name: 'Premium Monthly',
-              price: '€12.99',
-              period: '/month',
-              features: ['Unlimited sessions', 'All 3 suggestions', 'Full history', 'All strategies'],
-              highlight: true,
-            },
-            {
-              name: 'Yearly',
-              price: '€89.99',
-              period: '/year',
-              features: ['Everything in Monthly', 'Save 42%', 'Priority support'],
-            },
-          ].map(({ name, price, period, features, highlight }) => (
-            <div
-              key={name}
-              className={`rounded-2xl p-6 border-2 text-left ${
-                highlight
-                  ? 'border-charmy-500 bg-charmy-50 dark:bg-charmy-950'
-                  : 'border-gray-200 dark:border-gray-800'
-              }`}
-            >
-              <h3 className="font-bold text-gray-900 dark:text-white">{name}</h3>
-              <div className="mt-2 mb-4">
-                <span className="text-3xl font-bold text-charmy-500">{price}</span>
-                <span className="text-gray-400 text-sm ml-1">{period}</span>
-              </div>
-              <ul className="flex flex-col gap-2">
-                {features.map((f) => (
-                  <li key={f} className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                    <span className="text-charmy-500">✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <p className="text-gray-500 mb-8 max-w-xl mx-auto">
+          Every feature — unlimited sessions, all 3 suggestions, full history — is free for everyone.
+        </p>
+        <div className="max-w-sm mx-auto rounded-2xl p-6 border-2 border-charmy-500 bg-charmy-50 dark:bg-charmy-950 text-left">
+          <h3 className="font-bold text-gray-900 dark:text-white">Charmy</h3>
+          <div className="mt-2 mb-4">
+            <span className="text-3xl font-bold text-charmy-500">€0</span>
+            <span className="text-gray-400 text-sm ml-1">forever</span>
+          </div>
+          <ul className="flex flex-col gap-2">
+            {['Unlimited sessions', 'All 3 suggestions', 'Full history', 'All strategies'].map((f) => (
+              <li key={f} className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                <span className="text-charmy-500">✓</span> {f}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

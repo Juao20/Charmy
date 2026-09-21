@@ -20,10 +20,9 @@ class AISuggestion(models.Model):
     message_text = models.TextField()
     strategy_explanation = models.TextField()
     tone_used = models.CharField(max_length=50)
-    is_premium_only = models.BooleanField(default=False)  # ← nouveau : 3ème suggestion
     was_used = models.BooleanField(default=False)
     user_rating = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Suggestion pour {self.session} — premium: {self.is_premium_only}"
+        return f"Suggestion pour {self.session}"

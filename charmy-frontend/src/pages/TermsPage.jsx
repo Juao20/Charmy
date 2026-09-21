@@ -22,13 +22,13 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">4. Subscriptions and Payments</h2>
-          <p>Charmy offers free and premium plans. Premium subscriptions are billed on a monthly or yearly basis. All payments are processed securely through Paddle. By subscribing, you authorize us to charge your payment method on a recurring basis until you cancel.</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">4. Free of Charge</h2>
+          <p>Charmy is entirely free to use. We do not charge for any feature, do not collect payment information, and do not offer paid subscriptions.</p>
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">5. Cancellation</h2>
-          <p>You may cancel your subscription at any time through your account settings. Cancellation takes effect at the end of the current billing period. You will continue to have access to premium features until the end of the period you have paid for.</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">5. Account Deletion</h2>
+          <p>You may stop using Charmy and request deletion of your account and associated data at any time by contacting us.</p>
         </section>
 
         <section>

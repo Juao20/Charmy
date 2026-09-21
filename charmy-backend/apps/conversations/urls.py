@@ -4,7 +4,6 @@ from .views import (
     SessionSuggestionsView,
     SessionHistoryView,
     RateSuggestionView,
-    UsageStatusView,
 )
 
 urlpatterns = [
@@ -12,5 +11,4 @@ urlpatterns = [
     path('sessions/<uuid:session_id>/suggestions/', SessionSuggestionsView.as_view()),
     path('relations/<uuid:relation_id>/history/', SessionHistoryView.as_view()),
     path('suggestions/<uuid:pk>/rate/', RateSuggestionView.as_view()),
-    path('usage/', UsageStatusView.as_view()),
 ]

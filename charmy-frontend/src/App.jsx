@@ -11,8 +11,6 @@ import CoachPage from './pages/CoachPage'
 import ProfilePage from './pages/ProfilePage'
 import Layout from './components/layout/Layout'
 import SplashRedirector from './components/SplashRedirector'
-import PremiumPage from './pages/PremiumPage'
-import PremiumSuccessPage from './pages/PremiumSuccessPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import RefundPage from './pages/RefundPage'
@@ -43,11 +41,6 @@ export default function App() {
             <PrivateRoute><OnboardingPage /></PrivateRoute>
           } />
 
-          {/* Premium success — hors Layout */}
-          <Route path="/premium/success" element={
-            <PrivateRoute><PremiumSuccessPage /></PrivateRoute>
-          } />
-
           {/* Pages publiques */}
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
@@ -58,7 +51,6 @@ export default function App() {
             <PrivateRoute><Layout /></PrivateRoute>
           }>
             <Route index element={<HomePage />} />
-            <Route path="premium" element={<PremiumPage />} />
             <Route path="relations/new" element={<NewRelationPage />} />
             <Route path="relations/:id" element={<RelationPage />} />
             <Route path="relations/:id/edit" element={<EditRelationPage />} />

@@ -30,15 +30,12 @@ class CharmyAIService:
 
         suggestions = []
         items = data.get('suggestions', [])
-        for index, item in enumerate(items):
-            # La 3ème suggestion (index 2) est premium only
-            is_premium = (index == 2)
+        for item in items:
             suggestion = AISuggestion.objects.create(
                 session=session,
                 message_text=item['message_text'],
                 strategy_explanation=item['strategy_explanation'],
                 tone_used=item['tone_used'],
-                is_premium_only=is_premium,
             )
             suggestions.append(suggestion)
 

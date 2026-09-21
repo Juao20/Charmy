@@ -48,6 +48,10 @@ docker-compose.override.yml
 *.bak
 *.swp
 
+# Fichiers statiques générés (collectstatic) et médias locaux
+/staticfiles/
+/media/
+
 # Python
 __pycache__/
 venv/
@@ -56,4 +60,3 @@ venv/
 *.pyd
 *.env
 *.venv
-migrations/

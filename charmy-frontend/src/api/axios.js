@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://charmy-production.up.railway.app/api',
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -30,7 +32,7 @@ api.interceptors.response.use(
         if (storage) {
           const { state } = JSON.parse(storage)
           const { data } = await axios.post(
-            `${import.meta.env.VITE_API_URL || 'https://charmy-production.up.railway.app/api'}/auth/refresh/`,
+            `${API_URL}/auth/refresh/`,
             { refresh: state.refreshToken }
           )
           // Mettre à jour le store

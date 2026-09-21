@@ -1,22 +1,41 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { LogOut, Moon, Bell, ShieldCheck } from 'lucide-react'
 import { getMe } from '../api/auth'
 import useAuthStore from '../store/authStore'
+import useTheme from '../hooks/useTheme'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
-import {
-  ArrowRightOnRectangleIcon,
-  ShieldCheckIcon,
-  BellIcon,
-  QuestionMarkCircleIcon,
-  ChevronRightIcon,
-} from '@heroicons/react/24/outline'
+import Avatar from '../components/ui/Avatar'
+import SectionHeader from '../components/ui/SectionHeader'
+import Sheet from '../components/ui/Sheet'
+import { Skeleton } from '../components/ui/Skeleton'
+
+function Toggle({ checked, onChange, label }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={onChange}
+      className={`relative w-10 h-6 rounded-full shrink-0 transition-colors
+        ${checked ? 'bg-charmy-500' : 'bg-ink-200 dark:bg-white/15'}`}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform
+          ${checked ? 'translate-x-4' : 'translate-x-0'}`}
+      />
+    </button>
+  )
+}
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const { logout } = useAuthStore()
+  const { theme, toggle } = useTheme()
   const [showConfirm, setShowConfirm] = useState(false)
+  const [notifications, setNotifications] = useState(true)
 
   const { data: user, isLoading } = useQuery({
     queryKey: ['me'],
@@ -28,130 +47,76 @@ export default function ProfilePage() {
     navigate('/auth')
   }
 
-  if (isLoading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="animate-spin text-4xl">💘</div>
-    </div>
-  )
-
-  const menuItems = [
-    {
-      icon: BellIcon,
-      label: 'Notifications',
-      sublabel: 'Rappels et alertes',
-      onClick: () => {},
-    },
-    {
-      icon: ShieldCheckIcon,
-      label: 'Confidentialité',
-      sublabel: 'Tes données sont protégées',
-      onClick: () => {},
-    },
-    {
-      icon: QuestionMarkCircleIcon,
-      label: 'Aide & Support',
-      sublabel: 'FAQ et contact',
-      onClick: () => {},
-    },
-  ]
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-24 rounded-3xl" />
+        <Skeleton className="h-40 rounded-3xl" />
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="font-display text-2xl text-ink-950 dark:text-ink-50">Profil</h1>
+      </div>
 
-      {/* Header profil */}
-      <Card>
-        <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-charmy-400 to-pink-500 flex items-center justify-center text-2xl font-bold text-white shrink-0">
-            {user?.username?.charAt(0).toUpperCase()}
-          </div>
-
-          {/* Infos */}
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate">
-              {user?.username}
-            </h2>
-            <p className="text-sm text-gray-400 truncate">{user?.email}</p>
-          </div>
-        </div>
-
-        {/* Membre depuis */}
-        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-          <p className="text-xs text-gray-400 text-center">
-            Membre depuis le{' '}
-            {new Date(user?.created_at).toLocaleDateString('fr-FR', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </p>
+      <Card className="flex items-center gap-4">
+        <Avatar name={user?.username} src={user?.avatar} size="lg" />
+        <div className="flex-1 min-w-0">
+          <h2 className="font-medium text-ink-950 dark:text-ink-50 truncate">{user?.username}</h2>
+          <p className="text-sm text-ink-500 truncate">{user?.email}</p>
+          {user?.created_at && (
+            <p className="text-xs text-ink-400 mt-1">
+              Membre depuis {new Date(user.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+            </p>
+          )}
         </div>
       </Card>
 
-      {/* Menu items */}
-      <Card className="p-0 overflow-hidden">
-        {menuItems.map(({ icon: Icon, label, sublabel, onClick }, index) => (
-          <button
-            key={label}
-            onClick={onClick}
-            className={`w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left
-              ${index !== menuItems.length - 1
-                ? 'border-b border-gray-100 dark:border-gray-800'
-                : ''
-              }`}
-          >
-            <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-              <Icon className="w-5 h-5 text-gray-500" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{label}</p>
-              <p className="text-xs text-gray-400">{sublabel}</p>
-            </div>
-            <ChevronRightIcon className="w-4 h-4 text-gray-300 shrink-0" />
-          </button>
-        ))}
-      </Card>
+      <div className="flex flex-col gap-2.5">
+        <SectionHeader title="Préférences" />
+        <Card padding={false} className="divide-y divide-ink-100 dark:divide-white/10 overflow-hidden">
+          <div className="flex items-center gap-3 px-4 py-3.5">
+            <Moon className="w-4 h-4 text-ink-500 shrink-0" strokeWidth={1.75} />
+            <span className="flex-1 text-sm text-ink-800 dark:text-ink-200">Thème sombre</span>
+            <Toggle checked={theme === 'dark'} onChange={toggle} label="Thème sombre" />
+          </div>
+          <div className="flex items-center gap-3 px-4 py-3.5">
+            <Bell className="w-4 h-4 text-ink-500 shrink-0" strokeWidth={1.75} />
+            <span className="flex-1 text-sm text-ink-800 dark:text-ink-200">Notifications</span>
+            <Toggle checked={notifications} onChange={() => setNotifications((n) => !n)} label="Notifications" />
+          </div>
+        </Card>
+      </div>
 
-      {/* Version */}
-      <p className="text-xs text-gray-300 dark:text-gray-600 text-center">
-        Charmy v1.0.0 — Fait avec 💘
-      </p>
+      <div className="flex flex-col gap-2.5">
+        <SectionHeader title="Compte" />
+        <Card padding={false} className="overflow-hidden">
+          <div className="flex items-center gap-3 px-4 py-3.5">
+            <ShieldCheck className="w-4 h-4 text-ink-500 shrink-0" strokeWidth={1.75} />
+            <p className="text-sm text-ink-800 dark:text-ink-200">
+              Vos données restent privées et ne sont jamais partagées.
+            </p>
+          </div>
+        </Card>
+      </div>
 
-      {/* Bouton logout */}
-      <Button
-        variant="outline"
-        onClick={() => setShowConfirm(true)}
-        className="border-red-200 text-red-400 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
-      >
-        <ArrowRightOnRectangleIcon className="w-5 h-5" />
+      <Button variant="outline" onClick={() => setShowConfirm(true)} className="text-danger border-danger/25 hover:bg-danger-soft">
+        <LogOut className="w-4 h-4" strokeWidth={1.75} />
         Se déconnecter
       </Button>
 
-      {/* Modal confirmation logout */}
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center px-4 pb-8">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 w-full max-w-sm flex flex-col gap-4">
-            <div className="text-center">
-              <div className="text-4xl mb-3">👋</div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                Tu pars déjà ?
-              </h3>
-              <p className="text-sm text-gray-400 mt-1">
-                Tu seras déconnecté(e) de Charmy.
-              </p>
-            </div>
-            <Button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              Oui, me déconnecter
-            </Button>
-            <Button variant="ghost" onClick={() => setShowConfirm(false)}>
-              Annuler
-            </Button>
-          </div>
+      <p className="text-xs text-ink-300 dark:text-ink-600 text-center">Charmy — 100% gratuit</p>
+
+      <Sheet open={showConfirm} onClose={() => setShowConfirm(false)} title="Tu pars déjà ?">
+        <p className="text-sm text-ink-500 -mt-2">Tu seras déconnecté(e) de Charmy.</p>
+        <div className="flex flex-col gap-2 mt-1">
+          <Button variant="danger" onClick={handleLogout}>Oui, me déconnecter</Button>
+          <Button variant="ghost" onClick={() => setShowConfirm(false)}>Annuler</Button>
         </div>
-      )}
+      </Sheet>
     </div>
   )
 }

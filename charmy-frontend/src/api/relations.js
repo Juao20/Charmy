@@ -13,7 +13,11 @@ export const updateRelation = (id, data) => api.put(`/relations/${id}/`, data)
 export const deleteRelation = (id) => api.delete(`/relations/${id}/`)
 export const updateContact = (id, data) => api.put(`/relations/contacts/${id}/`, data)
 
-// Journal
+// Journal (par relation)
 export const getJournal = (relationId) => api.get(`/relations/${relationId}/journal/`)
 export const createJournalEntry = (relationId, data) =>
   api.post(`/relations/${relationId}/journal/`, data)
+
+// Journal (global, toutes relations confondues)
+export const getAllJournalEntries = () => api.get('/relations/journal/')
+export const createJournalEntryGlobal = (data) => api.post('/relations/journal/', data)

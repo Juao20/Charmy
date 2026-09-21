@@ -1,28 +1,24 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { MessageCircle, Brain, Target } from 'lucide-react'
 import useAuthStore from '../store/authStore'
+import Button from '../components/ui/Button'
 
 const SLIDES = [
   {
-    emoji: '💘',
+    icon: MessageCircle,
     title: 'Bienvenue sur Charmy',
-    description:
-      "L'IA qui t'aide à mener tes conversations amoureuses avec style, charme et stratégie.",
-    bg: 'from-charmy-500 to-pink-500',
+    description: "L'IA qui t'aide à mener tes conversations importantes avec style et justesse.",
   },
   {
-    emoji: '🧠',
+    icon: Brain,
     title: 'Ton coach personnel',
-    description:
-      'Colle une conversation, décris ton objectif — Charmy génère 3 messages calibrés pour séduire, reconquérir ou charmer.',
-    bg: 'from-purple-500 to-charmy-500',
+    description: 'Décris une situation, Charmy analyse le contexte et te propose 3 messages calibrés.',
   },
   {
-    emoji: '🎯',
-    title: 'Stratégie sur mesure',
-    description:
-      "Définit ton approche : mystérieux, flirty, tendre... Charmy adapte chaque message à ta façon d'être.",
-    bg: 'from-pink-500 to-orange-400',
+    icon: Target,
+    title: 'Sur mesure',
+    description: "Définis ton approche : mystérieux, direct, tendre... Charmy s'adapte à ta façon d'être.",
   },
 ]
 
@@ -32,87 +28,45 @@ export default function OnboardingPage() {
   const { setOnboardingDone } = useAuthStore()
 
   const isLast = current === SLIDES.length - 1
-
-  const handleNext = () => {
-    if (isLast) {
-      setOnboardingDone()
-      navigate('/')
-    } else {
-      setCurrent((c) => c + 1)
-    }
-  }
-
-  const handleSkip = () => {
-    setOnboardingDone()
-    navigate('/')
-  }
-
   const slide = SLIDES[current]
+  const Icon = slide.icon
+
+  const finish = () => { setOnboardingDone(); navigate('/') }
+  const handleNext = () => isLast ? finish() : setCurrent((c) => c + 1)
 
   return (
-    <div
-      className={`min-h-screen bg-gradient-to-br ${slide.bg} flex flex-col transition-all duration-500`}
-    >
-      {/* Skip */}
+    <div className="min-h-screen bg-ivory dark:bg-[#17151a] flex flex-col">
       <div className="flex justify-end p-6">
-        <button
-          onClick={handleSkip}
-          className="text-white/70 text-sm font-medium hover:text-white transition"
-        >
-          Passer →
+        <button onClick={finish} className="text-ink-400 text-sm font-medium hover:text-ink-600 dark:hover:text-ink-200 transition">
+          Passer
         </button>
       </div>
 
-      {/* Contenu slide */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-6">
-        <div
-          key={current}
-          className="flex flex-col items-center gap-6"
-          style={{ animation: 'fadeSlide 0.4s ease-out' }}
-        >
-          <div className="text-8xl">{slide.emoji}</div>
-          <h2 className="text-3xl font-bold text-white leading-tight">
-            {slide.title}
-          </h2>
-          <p className="text-white/80 text-base leading-relaxed max-w-xs">
-            {slide.description}
-          </p>
+        <div key={current} className="flex flex-col items-center gap-6 animate-fade-in-up">
+          <div className="w-16 h-16 rounded-3xl bg-charmy-50 dark:bg-charmy-950 flex items-center justify-center">
+            <Icon className="w-7 h-7 text-charmy-500" strokeWidth={1.5} />
+          </div>
+          <h2 className="font-display text-2xl text-ink-950 dark:text-ink-50 leading-tight">{slide.title}</h2>
+          <p className="text-ink-500 text-[15px] leading-relaxed max-w-xs">{slide.description}</p>
         </div>
       </div>
 
-      {/* Bottom */}
       <div className="p-8 flex flex-col items-center gap-6">
-
-        {/* Indicateurs de slide */}
         <div className="flex gap-2">
           {SLIDES.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === current
-                  ? 'w-6 h-2.5 bg-white'
-                  : 'w-2.5 h-2.5 bg-white/40'
-              }`}
+              aria-label={`Aller à l'étape ${i + 1}`}
+              className={`rounded-full transition-all duration-300 ${i === current ? 'w-6 h-1.5 bg-charmy-500' : 'w-1.5 h-1.5 bg-ink-200 dark:bg-white/20'}`}
             />
           ))}
         </div>
-
-        {/* Bouton suivant */}
-        <button
-          onClick={handleNext}
-          className="w-full max-w-xs bg-white text-charmy-500 font-bold py-4 rounded-3xl shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-transform"
-        >
-          {isLast ? '🚀 Commencer à charmer' : 'Continuer →'}
-        </button>
+        <Button onClick={handleNext} className="max-w-xs">
+          {isLast ? 'Commencer' : 'Continuer'}
+        </Button>
       </div>
-
-      <style>{`
-        @keyframes fadeSlide {
-          from { opacity: 0; transform: translateX(20px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-      `}</style>
     </div>
   )
 }

@@ -1,34 +1,109 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-charmy-50: #fff0f6;
-  --color-charmy-100: #ffd6e8;
-  --color-charmy-200: #ffadd2;
-  --color-charmy-300: #ff85be;
-  --color-charmy-400: #f759a0;
-  --color-charmy-500: #eb2f82;
-  --color-charmy-600: #c4136a;
-  --color-charmy-700: #9e0055;
-  --color-charmy-800: #780040;
-  --color-charmy-900: #52002c;
-  --color-charmy-950: #2d0018;
+  /* Primaire — berry sophistiqué, utilisé avec parcimonie */
+  --color-charmy-50: #fdf3f4;
+  --color-charmy-100: #fbe6e9;
+  --color-charmy-200: #f5cdd4;
+  --color-charmy-300: #eba5b2;
+  --color-charmy-400: #dd7488;
+  --color-charmy-500: #b8455f;
+  --color-charmy-600: #9c3450;
+  --color-charmy-700: #802943;
+  --color-charmy-800: #6a233a;
+  --color-charmy-900: #591f33;
+  --color-charmy-950: #310e1a;
+
+  /* Secondaire — rose poudré discret */
+  --color-blush-50: #fdf6f4;
+  --color-blush-100: #f9e8e4;
+  --color-blush-200: #f0d0c8;
+  --color-blush-300: #e3b0a4;
+
+  /* Neutres chauds (ivoire → charcoal) */
+  --color-ink-950: #1c1a1d;
+  --color-ink-900: #26232a;
+  --color-ink-700: #4a454d;
+  --color-ink-500: #79737c;
+  --color-ink-300: #b3adb5;
+  --color-ink-200: #ddd8db;
+  --color-ink-100: #efebe8;
+  --color-ink-50: #f8f5f1;
+  --color-ivory: #fbf8f4;
+
+  /* États */
+  --color-success: #5f8f6f;
+  --color-success-soft: #e7f1e8;
+  --color-warning: #b8874a;
+  --color-warning-soft: #f6ecdd;
+  --color-danger: #b3473f;
+  --color-danger-soft: #f7e6e3;
 
   --font-sans: 'Inter', sans-serif;
+  --font-display: 'Fraunces', serif;
+
+  --shadow-soft: 0 1px 2px rgba(28, 26, 29, 0.04), 0 8px 24px -12px rgba(28, 26, 29, 0.10);
+  --shadow-soft-lg: 0 2px 8px rgba(28, 26, 29, 0.05), 0 16px 40px -16px rgba(28, 26, 29, 0.14);
 }
 
 @layer base {
   body {
-    background-color: white;
-    color: #111827;
+    background-color: var(--color-ivory);
+    color: var(--color-ink-950);
     transition: background-color 0.2s, color 0.2s;
+    -webkit-font-smoothing: antialiased;
   }
 
   .dark body {
-    background-color: #030712;
-    color: #f3f4f6;
+    background-color: #17151a;
+    color: var(--color-ink-50);
   }
+
+  :focus-visible {
+    outline: 2px solid var(--color-charmy-400);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+.animate-pulse-soft {
+  animation: pulse-soft 1.6s ease-in-out infinite;
 }

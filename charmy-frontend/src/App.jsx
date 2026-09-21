@@ -4,10 +4,13 @@ import SplashPage from './pages/SplashPage'
 import AuthPage from './pages/AuthPage'
 import OnboardingPage from './pages/OnboardingPage'
 import HomePage from './pages/HomePage'
+import RelationsPage from './pages/RelationsPage'
 import RelationPage from './pages/RelationPage'
 import NewRelationPage from './pages/NewRelationPage'
 import EditRelationPage from './pages/EditRelationPage'
+import CoachEntryPage from './pages/CoachEntryPage'
 import CoachPage from './pages/CoachPage'
+import JournalPage from './pages/JournalPage'
 import ProfilePage from './pages/ProfilePage'
 import Layout from './components/layout/Layout'
 import SplashRedirector from './components/SplashRedirector'
@@ -51,10 +54,13 @@ export default function App() {
             <PrivateRoute><Layout /></PrivateRoute>
           }>
             <Route index element={<HomePage />} />
+            <Route path="relations" element={<RelationsPage />} />
             <Route path="relations/new" element={<NewRelationPage />} />
             <Route path="relations/:id" element={<RelationPage />} />
             <Route path="relations/:id/edit" element={<EditRelationPage />} />
             <Route path="relations/:id/coach" element={<CoachPage />} />
+            <Route path="coach" element={<CoachEntryPage />} />
+            <Route path="journal" element={<JournalPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
 
